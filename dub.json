@@ -1,0 +1,13 @@
+{
+	"name": "moddownloader",
+	"authors": [
+		"tosuke"
+	],
+	"description": "A minecraft mod and config downloader",
+	"copyright": "Copyright © 2016, tosuke",
+	"license": "MIT",
+	"dependencies":{
+	},
+	"targetPath":"bin",
+	"workingDirectory":"bin"
+}
