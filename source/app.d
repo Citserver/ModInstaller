@@ -50,7 +50,7 @@ void main(string[] args){
 		dlfile.targetDirectory = file.to;
 
 		file.fileName = dlfile.fileName;
-		writefln("DownLoad %s(%s)", a, file.fileName);
+		writefln("Download %s(%s)", a, file.fileName);
 		dlfile.download();
 
 		//unzipする
@@ -94,20 +94,22 @@ void unzip(string fileName){
 	import std.zip;
 	import std.path;
 	import std.file;
+	import std.string;
 
 	auto zip = new ZipArchive(fileName.read);
 	auto target = dirName(fileName);
 	foreach(de; zip.directory.byValue){
-		auto path = buildPath(target, de.name);
+		//de.name.writeln;
+		auto path = buildPath(target, tr(de.name, "/", dirSeparator));
 
 		if(!exists(path.dirName)) mkdirRecurse(path.dirName);
 
 		zip.expand(de);
 
-		if(!isMatch(path, regex(dirSeparator~"$")))/*ファイルのパスであるか*/{
+		if(!isMatch(path, regex("\\"~dirSeparator~"$")))/*ファイルのパスであるか*/{
+			
 			auto file = new File(path, "wb");
 			file.write(de.expandedData);
-			//de.name.writeln;
 			file.close;
 		}
 	}
