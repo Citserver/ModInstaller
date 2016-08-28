@@ -50,7 +50,7 @@ void main(string[] args){
 		dlfile.targetDirectory = file.to;
 
 		file.fileName = dlfile.fileName;
-		writefln("DownLoad %s(%s)", a, file.fileName);
+		writefln("Download %s(%s)", a, file.fileName);
 		dlfile.download();
 
 		//unzipする
@@ -99,7 +99,7 @@ void unzip(string fileName){
 	auto zip = new ZipArchive(fileName.read);
 	auto target = dirName(fileName);
 	foreach(de; zip.directory.byValue){
-		de.name.writeln;
+		//de.name.writeln;
 		auto path = buildPath(target, tr(de.name, "/", dirSeparator));
 
 		if(!exists(path.dirName)) mkdirRecurse(path.dirName);
