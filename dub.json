@@ -9,5 +9,16 @@
 	"dependencies":{
 	},
 	"targetPath":"bin",
-	"workingDirectory":"bin"
+	"workingDirectory":"bin",
+	"configurations":[
+		{
+			"name":"windows",
+			"platforms":["windows"],
+			"libs":["curl", "zlib"]
+		},
+		{
+			"name":"unix",
+			"platforms":["unix"]
+		}
+	]
 }
