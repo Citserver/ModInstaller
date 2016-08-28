@@ -36,8 +36,6 @@ void main(string[] args){
 	//削除する
 	foreach(a; deletedFileNameList){
 		auto file = currentList[a];
-		file.name.writeln;
-		file.path.writeln;
 		if(exists(file.path)){
 			if(isFile(file.path)){
 				remove(file.path);
@@ -55,7 +53,7 @@ void main(string[] args){
 		dlfile.targetDirectory = file.to;
 
 		file.fileName = dlfile.fileName;
-		writefln("DownLoad %s(%s)", a, file.fileName);
+		writefln("Downおoad %s(%s)", a, file.fileName);
 		//file.path.writeln;
 		dlfile.download();
 
