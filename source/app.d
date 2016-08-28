@@ -15,8 +15,13 @@ immutable serverID = "Citserver11";
 void main(string[] args){
 	if(!exists("./mods")) mkdir("mods");
 	auto api = CitserverAPI(apiRoot);
-	string latestVersion = api.latestVersion(serverID);
-	auto newList = api.fileList(serverID, latestVersion).toFileList;
+	string ver = api.latestVersion(serverID);
+
+	writeln("ModInstaller");
+	writefln("id:%s", serverID);
+	writefln("version:%s", ver);
+
+	auto newList = api.fileList(serverID, ver).toFileList;
 	auto currentList = currentFileList();
 
 	auto addedFileNameList =  newList.byValue
@@ -51,6 +56,7 @@ void main(string[] args){
 
 		file.fileName = dlfile.fileName;
 		writefln("DownLoad %s(%s)", a, file.fileName);
+		//file.path.writeln;
 		dlfile.download();
 
 		//unzipする
@@ -98,17 +104,24 @@ void unzip(string fileName){
 	auto zip = new ZipArchive(fileName.read);
 	auto target = dirName(fileName);
 	foreach(de; zip.directory.byValue){
-		auto path = buildPath(target, de.name);
+		import std.string;
+		auto path = buildPath(target, de.name.split("/").buildPath);
+		//path.writeln;
 
 		if(!exists(path.dirName)) mkdirRecurse(path.dirName);
 
 		zip.expand(de);
 
-		if(!isMatch(path, regex(dirSeparator~"$")))/*ファイルのパスであるか*/{
-			auto file = new File(path, "wb");
-			file.write(de.expandedData);
-			//de.name.writeln;
-			file.close;
+		if(!exists(path)){
+			/*ファイルのパスであるか*/
+			if(isMatch(path, regex(`\.[\w]+`))){
+				auto file = new File(path, "wb+");
+				file.write(de.expandedData);
+				//de.name.writeln;
+				file.close;
+			}else{
+				mkdirRecurse(path);
+			}
 		}
 	}
 }
