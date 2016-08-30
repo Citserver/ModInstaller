@@ -50,7 +50,7 @@ void main(string[] args){
 		dlfile.targetDirectory = file.to;
 
 		file.fileName = dlfile.fileName;
-		writefln("DownLoad %s(%s)", a, file.fileName);
+		writefln("Download %s(%s)", a, file.fileName);
 		dlfile.download();
 
 		//unzipする
@@ -105,10 +105,7 @@ void unzip(string fileName){
 		zip.expand(de);
 
 		if(!isMatch(path, regex(dirSeparator~"$")))/*ファイルのパスであるか*/{
-			auto file = new File(path, "wb");
-			file.write(de.expandedData);
-			//de.name.writeln;
-			file.close;
+			std.file.write(path, cast(void[])(de.expandedData));
 		}
 	}
 }
