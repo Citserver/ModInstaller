@@ -9,5 +9,7 @@
 	"dependencies":{
 	},
 	"targetPath":"bin",
-	"workingDirectory":"bin"
+	"workingDirectory":"bin",
+
+	"libs":["curl"]
 }

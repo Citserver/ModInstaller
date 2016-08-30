@@ -15,8 +15,13 @@ immutable serverID = "Citserver11";
 void main(string[] args){
 	if(!exists("./mods")) mkdir("mods");
 	auto api = CitserverAPI(apiRoot);
-	string latestVersion = api.latestVersion(serverID);
-	auto newList = api.fileList(serverID, latestVersion).toFileList;
+	string ver = api.latestVersion(serverID);
+
+	writeln("ModInstaller");
+	writefln("id:%s", serverID);
+	writefln("version:%s", ver);
+
+	auto newList = api.fileList(serverID, ver).toFileList;
 	auto currentList = currentFileList();
 
 	auto addedFileNameList =  newList.byValue
@@ -31,8 +36,6 @@ void main(string[] args){
 	//削除する
 	foreach(a; deletedFileNameList){
 		auto file = currentList[a];
-		file.name.writeln;
-		file.path.writeln;
 		if(exists(file.path)){
 			if(isFile(file.path)){
 				remove(file.path);
@@ -50,6 +53,7 @@ void main(string[] args){
 		dlfile.targetDirectory = file.to;
 
 		file.fileName = dlfile.fileName;
+
 		writefln("Download %s(%s)", a, file.fileName);
 		dlfile.download();
 
@@ -98,14 +102,21 @@ void unzip(string fileName){
 	auto zip = new ZipArchive(fileName.read);
 	auto target = dirName(fileName);
 	foreach(de; zip.directory.byValue){
-		auto path = buildPath(target, de.name);
+		import std.string;
+		auto path = buildPath(target, de.name.split("/").buildPath);
+		//path.writeln;
 
 		if(!exists(path.dirName)) mkdirRecurse(path.dirName);
 
 		zip.expand(de);
 
-		if(!isMatch(path, regex(dirSeparator~"$")))/*ファイルのパスであるか*/{
-			std.file.write(path, cast(void[])(de.expandedData));
+		if(!exists(path)){
+			/*ファイルのパスであるか*/
+			if(isMatch(path, regex(`\.[\w]+`))){
+				std.file.write(path, cast(void[])(de.expandedData));
+			}else{
+				mkdirRecurse(path);
+			}
 		}
 	}
 }
