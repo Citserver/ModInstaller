@@ -21,6 +21,8 @@ long cmpVersion(string a, string b){
 	}
 	return x.walkLength - y.walkLength;
 }
+
+
 struct CitserverAPI{
 	import std.net.curl;
 	import std.json;
@@ -30,22 +32,27 @@ struct CitserverAPI{
 	this(string _apiRoot){
 		apiRoot = _apiRoot;
 	}
+
 	public string apiRoot;
 
 	public auto IDs(){
 		return getIndexNode.object.byKey;
 	}
+
 	public auto versions(string id){
 		return getIndexNode[id].object.byKey
 					.filter!(a => a.isMatch(ctRegex!(`^[0-9\.]+$`)));
 	}
+
 	public string latestVersion(string id){
 		return this.versions(id)
 					.maxCount!((a, b) => cmpVersion(a, b) < 0)()[0];
 	}
+
 	public auto versionInfo(string id, string ver){
 		return getIndexNode[id][ver];
 	}
+	
 	public auto fileList(string id, string ver){
 		import std.string;
 		return std.net.curl.get([this.apiRoot, id, ver~".json"].join("/"))
