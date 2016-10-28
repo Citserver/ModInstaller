@@ -51,6 +51,8 @@ void main(string[] args){
 		auto dlfile = DownloadFile(file.from);
 		if(file.referer != "") dlfile.referer = file.referer;
 		dlfile.targetDirectory = file.to;
+		if (!exists(file.to))
+			mkdirRecurse(file.to);
 
 		file.fileName = dlfile.fileName;
 

@@ -11,5 +11,6 @@
 	"targetPath":"bin",
 	"workingDirectory":"bin",
 
-	"libs":["curl"]
+	"libs":["curl"],
+	"copyFiles-windows": ["libcurl.dll"]
 }
