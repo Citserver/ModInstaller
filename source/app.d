@@ -10,12 +10,36 @@ import std.regex;
 
 immutable fileListName = "currentFileList.json";
 immutable apiRoot = "http://api.citringo.net/citserver/modpackage/v1/";
-immutable serverID = "Citserver11";
+immutable serverIDName = "serverID.txt";
 
 void main(string[] args){
-	if(!exists("./mods")) mkdir("mods");
 	auto api = CitserverAPI(apiRoot);
-	string ver = api.latestVersion(serverID);
+	string serverID = null;
+
+	if (exists(serverIDName))
+	{
+		serverID = serverIDName.readText;
+	}
+	while (serverID == null || serverID == "")
+	{
+		
+		write("Input Pack ID >> ");
+		stdin.readf("%s\n", &serverID);
+	}
+
+	if (!exists(serverIDName))
+		std.file.write(serverIDName, serverID);
+	string ver = null;
+	try
+	{
+		ver = api.latestVersion(serverID);
+	}
+	catch (Exception e)
+	{
+		writeln("ERROR!!! " ~ e.msg);
+		serverIDName.remove;
+		return;
+	}
 
 	writeln("ModInstaller");
 	writefln("id:%s", serverID);
