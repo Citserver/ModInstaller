@@ -8,9 +8,33 @@ import std.json;
 import std.file;
 import moddl.main;
 
+immutable serverIDName = "serverID.txt";
+
 void main(string[] args){
 	auto api = CitserverAPI(apiRoot);
-	string ver = api.latestVersion(serverID);
+	string serverID;
+
+	if (exists(serverIDName)){
+		serverID = serverIDName.readText;
+	}
+	while (serverID == ""){
+		write("Input Pack ID >> ");
+		stdin.readf("%s\n", &serverID);
+	}
+
+	if (!exists(serverIDName))
+		std.file.write(serverIDName, serverID);
+	string ver = null;
+	try
+	{
+		ver = api.latestVersion(serverID);
+	}
+	catch (Exception e)
+	{
+		writeln("ERROR!!! " ~ e.msg);
+		serverIDName.remove;
+		return;
+	}
 
 	writeln("ModInstaller");
 	writefln("id:%s", serverID);
