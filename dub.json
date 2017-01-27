@@ -1,5 +1,5 @@
 {
-	"name": "moddownloader",
+	"name": "modinstaller",
 	"authors": [
 		"tosuke"
 	],
@@ -12,5 +12,5 @@
 	"workingDirectory":"bin",
 
 	"libs":["curl"],
-	"copyFiles-windows": ["libcurl.dll"]
+	"copyFiles-windows": ["libs/libcurl.dll"]
 }

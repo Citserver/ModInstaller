@@ -6,23 +6,18 @@ import moddl.api;
 import std.algorithm, std.range, std.array;
 import std.json;
 import std.file;
-import std.regex;
+import moddl.main;
 
-immutable fileListName = "currentFileList.json";
-immutable apiRoot = "http://api.citringo.net/citserver/modpackage/v1/";
 immutable serverIDName = "serverID.txt";
 
 void main(string[] args){
 	auto api = CitserverAPI(apiRoot);
-	string serverID = null;
+	string serverID;
 
-	if (exists(serverIDName))
-	{
+	if (exists(serverIDName)){
 		serverID = serverIDName.readText;
 	}
-	while (serverID == null || serverID == "")
-	{
-		
+	while (serverID == ""){
 		write("Input Pack ID >> ");
 		stdin.readf("%s\n", &serverID);
 	}
@@ -48,101 +43,11 @@ void main(string[] args){
 	auto newList = api.fileList(serverID, ver).toFileList;
 	auto currentList = currentFileList();
 
-	auto addedFileNameList =  newList.byValue
-														.filter!(a => a.name !in currentList || a != currentList[a.name])
-														.map!(a => a.name)
-														.cache;
+	deleteFile(currentList, newList);
+	addFile(currentList, newList);
 
-	auto deletedFileNameList = currentList.byValue
-														.filter!(a => a.name !in newList || a != newList[a.name])
-														.map!(a => a.name)
-														.cache;
-	//削除する
-	foreach(a; deletedFileNameList){
-		auto file = currentList[a];
-		if(exists(file.path)){
-			if(isFile(file.path)){
-				remove(file.path);
-			}else{
-				rmdirRecurse(file.path);
-			}
-		}
-	}
-	//追加する
-	foreach(a; addedFileNameList){
-		//落とす
-		auto file = newList[a];
-		auto dlfile = DownloadFile(file.from);
-		if(file.referer != "") dlfile.referer = file.referer;
-		dlfile.targetDirectory = file.to;
-		if (!exists(file.to))
-			mkdirRecurse(file.to);
-
-		file.fileName = dlfile.fileName;
-
-		writefln("Download %s(%s)", a, file.fileName);
-		dlfile.download();
-
-		//unzipする
-		if(file.unzip){
-			writefln("Decompress %s", a);
-			import std.zip, std.path;
-			unzip(file.path);
-			auto zipFilePath = file.path;
-
-			file.fileName = (new ZipArchive(file.path.read)).directory.byValue.front.name.pathSplitter.front;
-
-			remove(zipFilePath);
-		}
-		newList[a] = file;
-	}
-
-	//リストつくる
-	auto newFileList = currentList.dup;
-	foreach(a; deletedFileNameList){
-		newFileList.remove(a);
-	}
-	foreach(a; addedFileNameList){
-		newFileList[a] = newList[a];
-	}
+	
 	JSONValue root;
-	root["files"] = JSONValue(newFileList.toJSONValue);
+	root["files"] = JSONValue(currentList.toJSONValue);
 	std.file.write(fileListName, (&root).toJSON);
-}
-
-FileList currentFileList(){
-	if(exists(fileListName)){
-		auto node = fileListName.readText.parseJSON();
-		return node["files"].array.toFileList;
-	}else{
-		FileList a;
-		return a;
-	}
-}
-
-void unzip(string fileName){
-	import std.zip;
-	import std.path;
-	import std.file;
-
-	auto zip = new ZipArchive(fileName.read);
-	auto target = dirName(fileName);
-	foreach(de; zip.directory.byValue){
-		import std.string;
-		auto path = buildPath(target, de.name.split("/").buildPath);
-		//path.writeln;
-
-		if(!exists(path.dirName)) mkdirRecurse(path.dirName);
-
-		zip.expand(de);
-
-		if(!exists(path)){
-			/*ファイルのパスであるか*/
-			if(isMatch(path, regex(`\.[\w]+`))){
-				std.file.write(path, cast(void[])(de.expandedData));
-			}else{
-				mkdirRecurse(path);
-			}
-		}
-	}
 }
