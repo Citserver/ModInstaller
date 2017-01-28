@@ -8,10 +8,8 @@ import moddl.main;
 
 alias BasicElementOf(Range) = Unqual!(ElementEncodingType!Range);
 
-auto isMatch(R, RegEx)(R input, RegEx re) if (
-  isSomeString!R &&
-  is(typeof(R.init.matchAll(RegEx.init)))
-) {
+auto isMatch(R, RegEx)(R input, RegEx re) if (isSomeString!R
+    && is(typeof(R.init.matchAll(RegEx.init)))) {
   return !input.matchAll(re).empty;
 }
 

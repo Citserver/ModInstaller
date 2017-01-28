@@ -16,10 +16,9 @@ void main(string[] args) {
     serverID = serverIDName.readText;
   }
   while (serverID == "") {
-    write("Type Pack ID >> ");
-    readf("%s", &serverID);
+    writeln("Type Pack ID >> ");
     import std.string : strip;
-    serverID = serverID.strip;
+    serverID = readln.strip;
   }
   if (!exists(serverIDName)) {
     std.file.write(serverIDName, serverID);

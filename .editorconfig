@@ -12,4 +12,4 @@ charset = utf-8
 
 [*.d]
 dfmt_brace_style = stroustrup
-dfmt_soft_max_line_length =120
+dfmt_soft_max_line_length = 80

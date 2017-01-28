@@ -72,7 +72,9 @@ private string[string] header(HTTP http) {
   auto back = http.method;
 
   http.method = HTTP.Method.head;
-  http.onReceiveHeader((in char[] key, in char[] value) { data[key] = value.to!string; });
+  http.onReceiveHeader((in char[] key, in char[] value) {
+    data[key] = value.to!string;
+  });
   http.perform();
 
   http.method = back;
